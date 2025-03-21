@@ -58,6 +58,22 @@ async function getProject(req, res) {
     }
 }
 
+async function getProjectById(req, res) {
+  try {
+    const project = await Project.findOne({ _id: req.params.id })
+    .populate('category');
+
+    if (!project) {
+      return res.status(404).json({ error: 'Projeto não encontrado' });
+    }
+
+    res.json(project); 
+  } catch (error) {
+    console.error('Erro no servidor:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+}
+
 async function getCategories(req, res) {
     try {
       // Busca todos os projetos e popula os dados relacionados
@@ -104,8 +120,7 @@ async function updateProject(req, res) {
     // Atualização do projeto
     const updatedProject = await Project.findByIdAndUpdate(
       id,
-      updateData,
-      { new: true, runValidators: true }
+      updateData,      
     )
       .populate('category')
       .populate('services');
@@ -119,6 +134,4 @@ async function updateProject(req, res) {
   }
 }
 
-
-
-export {createProject, getProject, getCategories, deleteProject, updateProject} 
+export {createProject, getProject, getProjectById, getCategories, deleteProject, updateProject} 
