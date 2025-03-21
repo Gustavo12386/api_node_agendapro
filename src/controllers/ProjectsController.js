@@ -1,7 +1,6 @@
 import Project from '../models/Projects.js';  
 import Service from '../models/Service.js';  
 import Category from '../models/Category.js';
-import { request, response } from 'express';
 
 async function createProject(req, res){
     try {
