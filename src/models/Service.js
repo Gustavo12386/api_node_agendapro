@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const serviceSchema = new mongoose.Schema({
-//  id: {
-//    type: String,
-//    required: true
-//  },
   cost: {
     type: String,
     required: true

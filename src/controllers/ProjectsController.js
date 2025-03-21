@@ -29,12 +29,12 @@ async function createProject(req, res){
     
         await project.save();
     
-        // Popula os dados relacionados na resposta
-        const populatedProject = await Project.findById(project._id)
-          .populate('category')
-          .populate('name');        
-    
-        res.status(201).json(populatedProject);
+      // Popula corretamente as referências
+      const populatedProject = await Project.findById(project._id)
+        .populate('category')
+        .populate('services'); 
+
+     res.status(201).json(populatedProject);
         
       } catch (error) {
         res.status(400).json({ error: error.message });
@@ -46,7 +46,7 @@ async function getProject(req, res) {
       // Busca todos os projetos e popula os dados relacionados
       const projects = await Project.find()
       .populate('category')
-      .populate('name');     
+      .populate('services');     
   
       if (projects.length === 0) {
         return res.status(404).json({ error: 'Nenhum projeto encontrado' });
@@ -84,4 +84,42 @@ async function deleteProject(req, res) {
     return res.status(200).json({response: "Projeto deletado"})
 }
 
-export {createProject, getProject, getCategories, deleteProject} 
+async function updateProject(req, res) {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+
+    // Atualizar a categoria
+    if (req.body.category?.name) {
+      const category = await Category.findOne({ name: req.body.category.name });
+      if (!category) return res.status(404).json({ error: 'Categoria não encontrada' });
+      updateData.category = category._id;
+    }
+
+    // Atualizar serviços
+    if (req.body.services && Array.isArray(req.body.services)) {
+      const newServices = await Service.insertMany(req.body.services);
+      updateData.services = newServices.map(s => s._id);
+    }
+
+    // Atualização do projeto
+    const updatedProject = await Project.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    )
+      .populate('category')
+      .populate('services');
+
+    if (!updatedProject) return res.status(404).json({ error: 'Projeto não encontrado' });
+
+    res.status(200).json(updatedProject);
+    
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+
+
+export {createProject, getProject, getCategories, deleteProject, updateProject} 
