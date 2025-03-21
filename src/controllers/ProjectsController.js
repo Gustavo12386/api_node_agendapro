@@ -2,7 +2,7 @@ import Project from '../models/Projects.js';
 import Service from '../models/Service.js';  
 import Category from '../models/Category.js';
 
-async function createUser(req, res){
+async function createProject(req, res){
     try {
         // Busca a categoria pelo nome
         const category = await Category.findOne({ name: req.body.category.name });
@@ -42,7 +42,7 @@ async function createUser(req, res){
       }
 }
 
-async function getUser(req, res) {
+async function getProject(req, res) {
     try {
       // Busca todos os projetos e popula os dados relacionados
       const projects = await Project.find()
@@ -58,6 +58,23 @@ async function getUser(req, res) {
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
-  }
+}
 
-export {createUser, getUser} 
+async function getCategories(req, res) {
+    try {
+      // Busca todos os projetos e popula os dados relacionados
+      const categories = await Category.find()
+      .populate('category', 'name')      
+  
+      if (categories.length === 0) {
+        return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
+      }
+      
+      res.status(200).json(projects);
+      
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+}
+
+export {createProject, getProject, getCategories} 
