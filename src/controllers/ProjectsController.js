@@ -1,6 +1,7 @@
 import Project from '../models/Projects.js';  
 import Service from '../models/Service.js';  
 import Category from '../models/Category.js';
+import { request, response } from 'express';
 
 async function createProject(req, res){
     try {
@@ -31,9 +32,7 @@ async function createProject(req, res){
         // Popula os dados relacionados na resposta
         const populatedProject = await Project.findById(project._id)
           .populate('category')
-          .populate('name');
-
-        
+          .populate('name');        
     
         res.status(201).json(populatedProject);
         
@@ -64,17 +63,25 @@ async function getCategories(req, res) {
     try {
       // Busca todos os projetos e popula os dados relacionados
       const categories = await Category.find()
-      .populate('category', 'name')      
+      .populate('name')      
   
       if (categories.length === 0) {
         return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
       }
       
-      res.status(200).json(projects);
+      res.status(200).json(categories);
       
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
 }
 
-export {createProject, getProject, getCategories} 
+async function deleteProject(req, res) {
+    const id = req.params.id
+
+    await Project.findByIdAndDelete({_id: id})
+
+    return res.status(200).json({response: "Projeto deletado"})
+}
+
+export {createProject, getProject, getCategories, deleteProject} 

@@ -1,5 +1,5 @@
 import express, { request } from "express";
-import {getProject, getCategories, createProject} from "../controllers/ProjectsController.js";
+import {getProject, getCategories, createProject, deleteProject} from "../controllers/ProjectsController.js";
 
 const router = express.Router();
 
@@ -7,5 +7,6 @@ const router = express.Router();
 router.post('/projects', createProject);
 router.get('/projects', getProject);
 router.get('/categories', getCategories);
+router.delete('/projects/:id', deleteProject);
 
 export default router;
